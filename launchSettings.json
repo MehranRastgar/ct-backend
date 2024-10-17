@@ -1,0 +1,12 @@
+{
+  "profiles": {
+    "Docker Compose": {
+      "commandName": "DockerCompose",
+      "commandVersion": "1.0",
+      "serviceActions": {
+        "ctcom.identity-service": "StartDebugging",
+        "ctcom.product-service": "StartDebugging"
+      }
+    }
+  }
+}

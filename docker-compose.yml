@@ -1,0 +1,79 @@
+services:
+  ctcom.identity-service:
+    image: ${DOCKER_REGISTRY-}ctcomidentityservice
+    build:
+      context: .
+      dockerfile: microservices/ctcom.identity-service/ctcom.identity-service/Dockerfile
+    networks:
+      - rbmq
+      - redis
+      - sqlserver
+  #---------------------------------------------------------------------------------------
+  ctcom.product-service:
+    image: ${DOCKER_REGISTRY-}ctcomproductservice
+    build:
+      context: .
+      dockerfile: microservices/ctcom.product-service/ctcom.product-service/Dockerfile
+    networks:
+      - rbmq
+      - redis
+      - sqlserver
+  #---------------------------------------------------------------------------------------
+  rabbitmq:
+    container_name: rabbitmq-ctcom
+    image: rabbitmq:3-management-alpine
+    ports:
+      - 5672:5672
+      - 15672:15672
+    healthcheck:
+      test: ["CMD", "rabbitmqctl", "status"]
+      interval: 30s
+      timeout: 10s
+      retries: 50
+    networks:
+      - rbmq
+  #---------------------------------------------------------------------------------------
+  redis:
+    container_name: redis-ctcom
+    image: redis:latest
+    ports:
+      - 6379:6379
+    volumes:
+      - ./redis-data:/data
+    restart: always
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - redis
+  #---------------------------------------------------------------------------------------
+  sql-server-ctcom:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: sql-server-ctcom
+    hostname: sql-server
+    environment:
+      - ACCEPT_EULA=Y
+      - MSSQL_SA_PASSWORD=Mehran@SQRootPass
+    ports:
+      - "1433:1433"
+    volumes:
+      - sqlserver_data:/var/opt/mssql
+    networks:
+      - sqlserver
+#---------------------------------------------------------------------------------------
+
+networks:
+  gw:
+    driver: bridge
+  redis:
+    driver: bridge
+  sqlserver:
+    driver: bridge
+  rbmq:
+    driver: bridge
+#---------------------------------------------------------------------------------------
+volumes:
+  sqldb:
+  sqlserver_data:
