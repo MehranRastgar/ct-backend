@@ -14,6 +14,8 @@ services:
     build:
       context: .
       dockerfile: microservices/ctcom.product-service/ctcom.product-service/Dockerfile
+    ports:
+      - 7128:7128
     networks:
       - rbmq
       - redis
@@ -63,7 +65,6 @@ services:
     networks:
       - sqlserver
 #---------------------------------------------------------------------------------------
-
 networks:
   gw:
     driver: bridge
